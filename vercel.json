@@ -1,4 +1,15 @@
 {
   "version": 2,
-  "builds": [{ "src": "api/**/*.js", "use": "@vercel/node" }]
+  "builds": [
+    {
+      "src": "api/simpan.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/simpan",
+      "dest": "/api/simpan.js"
+    }
+  ]
 }
