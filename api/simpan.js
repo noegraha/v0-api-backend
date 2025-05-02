@@ -1,17 +1,17 @@
 // api/simpan.js
 
-import mysql from "mysql2/promise";
+import mysql from 'mysql2/promise';
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method Not Allowed" });
+  if (req.method !== 'POST') {
+    return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
   try {
     const { data, hasil, tanggal } = req.body;
 
     if (!data || !hasil || !tanggal) {
-      return res.status(400).json({ message: "Data tidak lengkap" });
+      return res.status(400).json({ message: 'Data tidak lengkap' });
     }
 
     // Koneksi ke MySQL (gunakan environment variables dari Vercel)
@@ -43,11 +43,9 @@ export default async function handler(req, res) {
       ]
     );
 
-    res.status(200).json({ message: "Data berhasil disimpan ke database" });
+    res.status(200).json({ message: 'Data berhasil disimpan ke database' });
   } catch (error) {
-    console.error("Gagal menyimpan data:", error);
-    res
-      .status(500)
-      .json({ message: "Terjadi kesalahan server", error: error.message });
+    console.error('Gagal menyimpan data:', error);
+    res.status(500).json({ message: 'Terjadi kesalahan server', error: error.message });
   }
 }
