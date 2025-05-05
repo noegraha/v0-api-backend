@@ -29,21 +29,17 @@ export default async function handler(req, res) {
       })
     }
 
-    // Log connection attempt (without exposing full password)
-    console.log("Connecting to database with:", {
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      database: process.env.DB_NAME,
-      password: process.env.DB_PASSWORD ? "provided" : "missing",
-    })
+    // Log connection attempt
+    console.log("Connecting to database...")
 
-    // Create database connection using environment variables
+    // Create database connection with the correct port
     connection = await mysql.createConnection({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      connectTimeout: 10000,
+      host: process.env.DB_HOST || "m7h7s.h.filess.io",
+      port: 3307, // Add the port
+      user: process.env.DB_USER || "master_twiceuseat",
+      password: process.env.DB_PASSWORD || "4ea92b414b3383fbec0e0e7d91cdd623066dace8",
+      database: process.env.DB_NAME || "master_twiceuseat",
+      connectTimeout: 15000,
     })
 
     console.log("Database connection successful")
@@ -85,20 +81,15 @@ export default async function handler(req, res) {
     // Return appropriate error message based on error type
     if (error.code === "ETIMEDOUT" || error.code === "ECONNREFUSED") {
       res.status(500).json({
-        message: "Tidak dapat terhubung ke database - Database tidak dapat diakses dari Vercel",
+        message: "Tidak dapat terhubung ke database - Database tidak dapat diakses",
         error: error.code,
-        solution: "Gunakan database publik yang dapat diakses dari internet",
+        solution: "Periksa konfigurasi database dan pastikan port 3307 terbuka",
       })
     } else if (error.code === "ER_ACCESS_DENIED_ERROR") {
       res.status(500).json({
         message: "Akses ke database ditolak - Kredensial tidak valid",
         error: "Access denied",
-        solution: "Periksa username dan password, pastikan user memiliki akses dari host manapun ('%')",
-        details: {
-          errorCode: error.code,
-          sqlState: error.sqlState,
-          sqlMessage: error.sqlMessage,
-        },
+        solution: "Periksa username dan password",
       })
     } else {
       res.status(500).json({
