@@ -6,10 +6,10 @@ export default async function handler(req, res) {
   try {
     // Replace these with your actual database credentials
     const connection = await mysql.createConnection({
-      host: process.env.DB_HOST || "your-db-host.com",
-      user: process.env.DB_USER || "your-username",
-      password: process.env.DB_PASSWORD || "your-password",
-      database: process.env.DB_NAME || "your-database",
+      host: process.env.DB_HOS,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       connectTimeout: 10000,
     })
 
