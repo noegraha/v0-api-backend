@@ -29,16 +29,21 @@ export default async function handler(req, res) {
       })
     }
 
-    // Log connection attempt (without exposing password)
-    console.log("Connecting to database...")
+    // Log connection attempt (without exposing full password)
+    console.log("Connecting to database with:", {
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      database: process.env.DB_NAME,
+      password: process.env.DB_PASSWORD ? "provided" : "missing",
+    })
 
-    // Create database connection with shorter timeout
+    // Create database connection using environment variables
     connection = await mysql.createConnection({
-      host: "m7h7s.h.filess.io",
-      user: "master_twiceuseat",
-      password: "4ea92b414b3383fbec0e0e7d91cdd623066dace8",
-      database: "master_twiceuseat",
-      connectTimeout: 5000, // Reduced timeout to fail faster
+      host: process.env.DB_HOST,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      connectTimeout: 10000,
     })
 
     console.log("Database connection successful")
@@ -82,17 +87,24 @@ export default async function handler(req, res) {
       res.status(500).json({
         message: "Tidak dapat terhubung ke database - Database tidak dapat diakses dari Vercel",
         error: error.code,
-        solution: "Gunakan database publik yang dapat diakses dari internet, bukan IP lokal (192.168.0.100)",
+        solution: "Gunakan database publik yang dapat diakses dari internet",
       })
     } else if (error.code === "ER_ACCESS_DENIED_ERROR") {
       res.status(500).json({
-        message: "Akses ke database ditolak",
+        message: "Akses ke database ditolak - Kredensial tidak valid",
         error: "Access denied",
+        solution: "Periksa username dan password, pastikan user memiliki akses dari host manapun ('%')",
+        details: {
+          errorCode: error.code,
+          sqlState: error.sqlState,
+          sqlMessage: error.sqlMessage,
+        },
       })
     } else {
       res.status(500).json({
         message: "Terjadi kesalahan server",
         error: error.message,
+        details: error.code,
       })
     }
   } finally {
