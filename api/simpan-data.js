@@ -1,6 +1,6 @@
 // api/simpan-data.js
 
-import mysql from "mysql2/promise";
+import mysql from "mysql2/promise"
 
 export default async function handler(req, res) {
   // Add CORS headers
@@ -21,17 +21,17 @@ export default async function handler(req, res) {
 
   // Only allow POST requests for actual data processing
   if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method Not Allowed" });
+    return res.status(405).json({ message: "Method Not Allowed" })
   }
 
   // Initialize connection variable outside try block to use in finally
-  let connection;
+  let connection
 
   try {
-    console.log("Request received:", { method: req.method });
+    console.log("Request received:", { method: req.method })
 
     // Extract data from request body
-    const { data, hasil, tanggal } = req.body;
+    const { data, hasil, tanggal } = req.body
 
     // Validate required fields
     if (!data || !hasil || !tanggal) {
@@ -42,23 +42,23 @@ export default async function handler(req, res) {
           hasil: !!hasil,
           tanggal: !!tanggal,
         },
-      });
+      })
     }
 
     // Log connection attempt
-    console.log("Connecting to database...");
+    console.log("Connecting to database...")
 
     // Create database connection with the correct port
     connection = await mysql.createConnection({
-      host: process.env.DB_HOST,
+      host: process.env.DB_HOST || "m7h7s.h.filess.io",
       port: 3307, // Add the port
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
+      user: process.env.DB_USER || "master_twiceuseat",
+      password: process.env.DB_PASSWORD || "4ea92b414b3383fbec0e0e7d91cdd623066dace8",
+      database: process.env.DB_NAME || "master_twiceuseat",
       connectTimeout: 15000,
-    });
+    })
 
-    console.log("Database connection successful");
+    console.log("Database connection successful")
 
     // Create table if it doesn't exist
     await connection.execute(`
@@ -68,9 +68,9 @@ export default async function handler(req, res) {
         hasil VARCHAR(20),
         tanggal DATETIME
       )
-    `);
+    `)
 
-    console.log("Table verified/created");
+    console.log("Table verified/created")
 
     // Insert data into the table
     const [result] = await connection.execute(
@@ -80,49 +80,48 @@ export default async function handler(req, res) {
         JSON.stringify(data), // Store data as JSON string
         hasil,
         tanggal,
-      ]
-    );
+      ],
+    )
 
-    console.log("Data inserted successfully:", { insertId: result.insertId });
+    console.log("Data inserted successfully:", { insertId: result.insertId })
 
     // Return success response
     res.status(200).json({
       message: "Data berhasil disimpan ke database",
       insertId: result.insertId,
-    });
+    })
   } catch (error) {
     // Log the full error for debugging
-    console.error("Gagal menyimpan data:", error);
+    console.error("Gagal menyimpan data:", error)
 
     // Return appropriate error message based on error type
     if (error.code === "ETIMEDOUT" || error.code === "ECONNREFUSED") {
       res.status(500).json({
-        message:
-          "Tidak dapat terhubung ke database - Database tidak dapat diakses",
+        message: "Tidak dapat terhubung ke database - Database tidak dapat diakses",
         error: error.code,
         solution: "Periksa konfigurasi database dan pastikan port 3307 terbuka",
-      });
+      })
     } else if (error.code === "ER_ACCESS_DENIED_ERROR") {
       res.status(500).json({
         message: "Akses ke database ditolak - Kredensial tidak valid",
         error: "Access denied",
         solution: "Periksa username dan password",
-      });
+      })
     } else {
       res.status(500).json({
         message: "Terjadi kesalahan server",
         error: error.message,
         details: error.code,
-      });
+      })
     }
   } finally {
     // Close the connection if it was established
     if (connection) {
       try {
-        await connection.end();
-        console.log("Database connection closed");
+        await connection.end()
+        console.log("Database connection closed")
       } catch (err) {
-        console.error("Error closing database connection:", err);
+        console.error("Error closing database connection:", err)
       }
     }
   }
