@@ -1,8 +1,8 @@
-// api/test-connection.js
+// api/ping.js
 
 export default function handler(req, res) {
   res.status(200).json({
-    message: "Test connection endpoint is working",
+    message: "pong",
     timestamp: new Date().toISOString(),
   })
 }
