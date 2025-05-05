@@ -37,7 +37,7 @@ export default async function handler(req, res) {
       host: "m7h7s.h.filess.io",
       user: "master_twiceuseat",
       password: "4ea92b414b3383fbec0e0e7d91cdd623066dace8",
-      database: "master",
+      database: "master_twiceuseat",
       connectTimeout: 5000, // Reduced timeout to fail faster
     })
 
