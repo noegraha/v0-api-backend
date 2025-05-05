@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Laporan Kanker</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .loading {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 200px;
+    }
+    .pagination {
+      margin-top: 20px;
+    }
+    .sort-icon {
+      cursor: pointer;
+      margin-left: 5px;
+    }
+    .sort-icon.active {
+      color: #0d6efd;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h1 class="mb-4">Dashboard Laporan Kanker</h1>
+    
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="input-group">
+          <input type="text" id="searchInput" class="form-control" placeholder="Cari berdasarkan nama atau hasil...">
+          <button class="btn btn-primary" id="searchButton">Cari</button>
+        </div>
+      </div>
+      <div class="col-md-2">
+        <select id="limitSelect" class="form-select">
+          <option value="10">10 per halaman</option>
+          <option value="25">25 per halaman</option>
+          <option value="50">50 per halaman</option>
+          <option value="100">100 per halaman</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="table-responsive">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>ID <span class="sort-icon" data-sort="id">↕️</span></th>
+            <th>Nama <span class="sort-icon" data-sort="data_form-$.nama">↕️</span></th>
+            <th>Umur</th>
+            <th>Jenis Kelamin</th>
+            <th>Gejala</th>
+            <th>Hasil <span class="sort-icon" data-sort="hasil">↕️</span></th>
+            <th>Tanggal <span class="sort-icon" data-sort="tanggal">↕️</span></th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="dataTable">
+          <!-- Data will be loaded here -->
+        </tbody>
+      </table>
+    </div>
+    
+    <div id="loading" class="loading">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    
+    <nav aria-label="Page navigation">
+      <ul class="pagination justify-content-center" id="pagination">
+        <!-- Pagination will be generated here -->
+      </ul>
+    </nav>
+  </div>
+
+  <!-- Modal for viewing details -->
+  <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="detailModalLabel">Detail Laporan</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="modalBody">
+          <!-- Detail content will be loaded here -->
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Configuration
+    const apiUrl = '/api/get-laporan';
+    let currentPage = 1;
+    let currentLimit = 10;
+    let currentSearch = '';
+    let currentSortBy = 'id';
+    let currentSortOrder = 'asc';
+    let detailModal;
+
+    // DOM Elements
+    const dataTable = document.getElementById('dataTable');
+    const loading = document.getElementById('loading');
+    const pagination = document.getElementById('pagination');
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    const limitSelect = document.getElementById('limitSelect');
+    const sortIcons = document.querySelectorAll('.sort-icon');
+    const modalBody = document.getElementById('modalBody');
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+      fetchData();
+      
+      // Initialize modal
+      detailModal = new bootstrap.Modal(document.getElementById('detailModal'));
+      
+      // Event listeners
+      searchButton.addEventListener('click', handleSearch);
+      searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          handleSearch();
+        }
+      });
+      
+      limitSelect.addEventListener('change', function() {
+        currentLimit = this.value;
+        currentPage = 1;
+        fetchData();
+      });
+      
+      sortIcons.forEach(icon => {
+        icon.addEventListener('click', function() {
+          const sortBy = this.getAttribute('data-sort');
+          if (currentSortBy === sortBy) {
+            currentSortOrder = currentSortOrder === 'asc' ? 'desc' : 'asc';
+          } else {
+            currentSortBy = sortBy;
+            currentSortOrder = 'asc';
+          }
+          
+          // Update active sort icon
+          sortIcons.forEach(i => i.classList.remove('active'));
+          this.classList.add('active');
+          this.textContent = currentSortOrder === 'asc' ? '↑' : '↓';
+          
+          fetchData();
+        });
+      });
+    });
+
+    // Fetch data from API
+    async function fetchData() {
+      try {
+        loading.style.display = 'flex';
+        dataTable.innerHTML = '';
+        
+        const url = new URL(apiUrl, window.location.origin);
+        url.searchParams.append('page', currentPage);
+        url.searchParams.append('limit', currentLimit);
+        url.searchParams.append('sortBy', currentSortBy);
+        url.searchParams.append('sortOrder', currentSortOrder);
+        
+        if (currentSearch) {
+          url.searchParams.append('search', currentSearch);
+        }
+        
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.data.length === 0) {
+          dataTable.innerHTML = '<tr><td colspan="8" class="text-center">Tidak ada data</td></tr>';
+        } else {
+          renderTable(data.data);
+        }
+        
+        renderPagination(data.pagination);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        dataTable.innerHTML = `<tr><td colspan="8" class="text-center text-danger">Error: ${error.message}</td></tr>`;
+      } finally {
+        loading.style.display = 'none';
+      }
+    }
+
+    // Render table with data
+    function renderTable(data) {
+      dataTable.innerHTML = '';
+      
+      data.forEach(item => {
+        const row = document.createElement('tr');
+        
+        // Extract data from JSON
+        const patientData = item.data_form;
+        const nama = patientData?.nama || 'N/A';
+        const umur = patientData?.umur || 'N/A';
+        const jenisKelamin = patientData?.jenis_kelamin || 'N/A';
+        const gejala = Array.isArray(patientData?.gejala) 
+          ? patientData.gejala.join(', ') 
+          : (patientData?.gejala || 'N/A');
+        
+        // Format date
+        const tanggal = new Date(item.tanggal).toLocaleDateString('id-ID', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+        
+        row.innerHTML = `
+          <td>${item.id}</td>
+          <td>${nama}</td>
+          <td>${umur}</td>
+          <td>${jenisKelamin}</td>
+          <td>${gejala}</td>
+          <td>${item.hasil}</td>
+          <td>${tanggal}</td>
+          <td>
+            <button class="btn btn-sm btn-info view-details" data-id="${item.id}">Detail</button>
+          </td>
+        `;
+        
+        dataTable.appendChild(row);
+      });
+      
+      // Add event listeners to detail buttons
+      document.querySelectorAll('.view-details').forEach(button => {
+        button.addEventListener('click', function() {
+          const id = this.getAttribute('data-id');
+          const item = data.find(d => d.id == id);
+          showDetails(item);
+        });
+      });
+    }
+
+    // Render pagination
+    function renderPagination(paginationData) {
+      pagination.innerHTML = '';
+      
+      // Previous button
+      const prevLi = document.createElement('li');
+      prevLi.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+      prevLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage - 1}">Previous</a>`;
+      pagination.appendChild(prevLi);
+      
+      // Page numbers
+      const startPage = Math.max(1, currentPage - 2);
+      const endPage = Math.min(paginationData.totalPages, currentPage + 2);
+      
+      for (let i = startPage; i <= endPage; i++) {
+        const li = document.createElement('li');
+        li.className = `page-item ${i === currentPage ? 'active' : ''}`;
+        li.innerHTML = `<a class="page-link" href="#" data-page="${i}">${i}</a>`;
+        pagination.appendChild(li);
+      }
+      
+      // Next button
+      const nextLi = document.createElement('li');
+      nextLi.className = `page-item ${currentPage === paginationData.totalPages ? 'disabled' : ''}`;
+      nextLi.innerHTML = `<a class="page-link" href="#" data-page="${currentPage + 1}">Next</a>`;
+      pagination.appendChild(nextLi);
+      
+      // Add event listeners to pagination links
+      document.querySelectorAll('.page-link').forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const page = parseInt(this.getAttribute('data-page'));
+          if (page >= 1 && page <= paginationData.totalPages) {
+            currentPage = page;
+            fetchData();
+          }
+        });
+      });
+    }
+
+    // Handle search
+    function handleSearch() {
+      currentSearch = searchInput.value.trim();
+      currentPage = 1;
+      fetchData();
+    }
+
+    // Show details in modal
+    function showDetails(item) {
+      const patientData = item.data_form;
+      
+      // Format date
+      const tanggal = new Date(item.tanggal).toLocaleDateString('id-ID', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+      
+      // Build detail HTML
+      let detailHtml = `
+        <div class="card mb-3">
+          <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Informasi Pasien</h5>
+          </div>
+          <div class="card-body">
+            <div class="row mb-2">
+              <div class="col-md-3 fw-bold">Nama:</div>
+              <div class="col-md-9">${patientData?.nama || 'N/A'}</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-md-3 fw-bold">Umur:</div>
+              <div class="col-md-9">${patientData?.umur || 'N/A'} tahun</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-md-3 fw-bold">Jenis Kelamin:</div>
+              <div class="col-md-9">${patientData?.jenis_kelamin || 'N/A'}</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card mb-3">
+          <div class="card-header bg-info text-white">
+            <h5 class="mb-0">Gejala</h5>
+          </div>
+          <div class="card-body">
+      `;
+      
+      // Add gejala
+      if (Array.isArray(patientData?.gejala) && patientData.gejala.length > 0) {
+        detailHtml += '<ul>';
+        patientData.gejala.forEach(gejala => {
+          detailHtml += `<li>${gejala}</li>`;
+        });
+        detailHtml += '</ul>';
+      } else {
+        detailHtml += '<p>Tidak ada gejala yang tercatat</p>';
+      }
+      
+      detailHtml += `
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header bg-${item.hasil === 'Positif' ? 'danger' : 'success'} text-white">
+            <h5 class="mb-0">Hasil Diagnosis</h5>
+          </div>
+          <div class="card-body">
+            <div class="row mb-2">
+              <div class="col-md-3 fw-bold">Hasil:</div>
+              <div class="col-md-9">${item.hasil}</div>
+            </div>
+            <div class="row mb-2">
+              <div class="col-md-3 fw-bold">Tanggal:</div>
+              <div class="col-md-9">${tanggal}</div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      modalBody.innerHTML = detailHtml;
+      detailModal.show();
+    }
+  </script>
+</body>
+</html>
