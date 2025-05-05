@@ -28,16 +28,18 @@ export default async function handler(req, res) {
   try {
     // Connect to the database
     connection = await mysql.createConnection({
-      host: process.env.DB_HOST || "m7h7s.h.filess.io",
-      port: 3307,
-      user: process.env.DB_USER || "master_twiceuseat",
-      password: process.env.DB_PASSWORD || "4ea92b414b3383fbec0e0e7d91cdd623066dace8",
-      database: process.env.DB_NAME || "master_twiceuseat",
+      host: process.env.DB_HOST,
+      port: process.env.DB_PORT,
+      user: process.env.DB_USER,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
       connectTimeout: 15000,
     });
 
     // Fetch data
-    const [rows] = await connection.execute("SELECT * FROM laporan_kanker ORDER BY tanggal DESC");
+    const [rows] = await connection.execute(
+      "SELECT * FROM laporan_kanker ORDER BY tanggal DESC"
+    );
 
     // Return the results
     res.status(200).json(rows);
