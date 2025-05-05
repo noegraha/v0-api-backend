@@ -34,10 +34,10 @@ export default async function handler(req, res) {
 
     // Create database connection with shorter timeout
     connection = await mysql.createConnection({
-      host: "panel.freehosting.com",
-      user: "noenotes_master",
-      password: "Okeloh09.",
-      database: "noenotes_master",
+      host: "m7h7s.h.filess.io",
+      user: "master_twiceuseat",
+      password: "4ea92b414b3383fbec0e0e7d91cdd623066dace8",
+      database: "master",
       connectTimeout: 5000, // Reduced timeout to fail faster
     })
 
