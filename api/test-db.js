@@ -3,6 +3,21 @@
 import mysql from "mysql2/promise"
 
 export default async function handler(req, res) {
+  // Add CORS headers
+  res.setHeader("Access-Control-Allow-Credentials", true)
+  res.setHeader("Access-Control-Allow-Origin", "*") // Allow any origin
+  res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS,PATCH,DELETE,POST,PUT")
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+  )
+
+  // Handle OPTIONS request (preflight)
+  if (req.method === "OPTIONS") {
+    res.status(200).end()
+    return
+  }
+
   let connection
 
   try {
