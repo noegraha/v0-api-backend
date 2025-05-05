@@ -32,15 +32,13 @@ export default async function handler(req, res) {
     // Log connection attempt (without exposing password)
     console.log("Connecting to database...")
 
-    // Create database connection with hardcoded credentials
-    // Note: In production, you should use environment variables
+    // Create database connection with shorter timeout
     connection = await mysql.createConnection({
       host: "192.168.0.100",
       user: "noenotes_master",
       password: "Okeloh09.",
       database: "noenotes_master",
-      // Optional: Add connection timeout
-      connectTimeout: 10000,
+      connectTimeout: 5000, // Reduced timeout to fail faster
     })
 
     console.log("Database connection successful")
@@ -80,10 +78,11 @@ export default async function handler(req, res) {
     console.error("Gagal menyimpan data:", error)
 
     // Return appropriate error message based on error type
-    if (error.code === "ECONNREFUSED") {
+    if (error.code === "ETIMEDOUT" || error.code === "ECONNREFUSED") {
       res.status(500).json({
-        message: "Tidak dapat terhubung ke database",
-        error: "Connection refused",
+        message: "Tidak dapat terhubung ke database - Database tidak dapat diakses dari Vercel",
+        error: error.code,
+        solution: "Gunakan database publik yang dapat diakses dari internet, bukan IP lokal (192.168.0.100)",
       })
     } else if (error.code === "ER_ACCESS_DENIED_ERROR") {
       res.status(500).json({
