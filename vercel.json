@@ -2,9 +2,9 @@
   "version": 2,
   "builds": [{ "src": "api/**/*.js", "use": "@vercel/node" }],
   "routes": [
-    { "src": "/api/get-laporan", "dest": "/api/get-laporan.js" },
     { "src": "/api/simpan-data", "dest": "/api/simpan-data.js" },
     { "src": "/api/test-db", "dest": "/api/test-db.js" },
-    { "src": "/api/(.*)", "dest": "/api/$1.js" },
+    { "src": "/api", "dest": "/api/index.js" },
+    { "src": "/", "dest": "/api/index.js" }
   ]
 }
