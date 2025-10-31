@@ -3,11 +3,15 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 1,
             "patches": [
                 {
                     "date": 1761877193024,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1761890021203,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,6 +1,6 @@\n // api/simpan-data.js\r\n-\r\n+import 'dotenv/config'\r\n import mysql from \"mysql2/promise\"\r\n \r\n export default async function handler(req, res) {\r\n   // Add CORS headers\r\n"
                 }
             ],
             "date": 1761877193024,

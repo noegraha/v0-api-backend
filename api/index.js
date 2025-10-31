@@ -1,5 +1,6 @@
 // api/index.js
 // This file will handle requests to /api/
+import 'dotenv/config'
 
 export default function handler(req, res) {
   res.status(200).json({
