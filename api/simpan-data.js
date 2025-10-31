@@ -50,11 +50,11 @@ export default async function handler(req, res) {
 
     // Create database connection with the correct port
     connection = await mysql.createConnection({
-      host: process.env.DB_HOST || "m7h7s.h.filess.io",
-      port: 3307, // Add the port
-      user: process.env.DB_USER || "master_twiceuseat",
-      password: process.env.DB_PASSWORD || "4ea92b414b3383fbec0e0e7d91cdd623066dace8",
-      database: process.env.DB_NAME || "master_twiceuseat",
+      host: process.env.DB_HOST || "337job.h.filess.io",
+      port: 3306, // Add the port
+      user: process.env.DB_USER || "didik_anak_platejarto",
+      password: process.env.DB_PASSWORD || "92d2bcef0121274121b801e495adc80be49679f0",
+      database: process.env.DB_NAME || "didik_anak_platejarto",
       connectTimeout: 15000,
     })
 
