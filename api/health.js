@@ -1,15 +1,13 @@
-export default function handler(req, res) {
+export const runtime = 'nodejs';
+
+export default async function handler(req, res) {
   res.status(200).json({
-    status: "ok",
-    message: "API is running",
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV,
-    // Don't include sensitive information
-    database: {
-      host: process.env.DB_HOST ? "configured" : "missing",
-      user: process.env.DB_USER ? "configured" : "missing",
-      database: process.env.DB_NAME ? "configured" : "missing",
-      password: process.env.DB_PASSWORD ? "configured" : "missing",
-    },
-  })
+    ok: true,
+    env: {
+      DB_HOST: !!process.env.DB_HOST,
+      DB_USER: !!process.env.DB_USER,
+      DB_NAME: !!process.env.DB_NAME,
+      DB_PORT: process.env.DB_PORT || '3306'
+    }
+  });
 }

@@ -1,5 +1,6 @@
 // api/_middleware.js
 // This file will add CORS headers to all API routes
+export const runtime = 'nodejs';
 
 export default function middleware(req, res, next) {
   // Add CORS headers to all responses

@@ -3,11 +3,15 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 1,
             "patches": [
                 {
                     "date": 1761890262059,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1761890945798,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,36 @@\n+export const runtime = 'nodejs';\r\n+\r\n+import mysql from 'mysql2/promise';\r\n+\r\n+export default async function handler(req, res) {\r\n+  const started = Date.now();\r\n+  try {\r\n+    const conn = await mysql.createConnection({\r\n+      host: process.env.DB_HOST,                 // pastikan BUKAN DB_HOS\r\n+      port: Number(process.env.DB_PORT || 3306),\r\n+      user: process.env.DB_USER,\r\n+      password: process.env.DB_PASSWORD || process.env.DB_PASS,\r\n+      database: process.env.DB_NAME,\r\n+      // ssl: { rejectUnauthorized: true }, // aktifkan jika DB mewajibkan SSL\r\n+      connectTimeout: 10000\r\n+    });\r\n+\r\n+    const [rows] = await conn.query('SELECT 1 AS ok');\r\n+    await conn.end();\r\n+\r\n+    res.status(200).json({\r\n+      ok: true,\r\n+      rows,\r\n+      elapsed_ms: Date.now() - started\r\n+    });\r\n+  } catch (e) {\r\n+    // Jangan biarkan throw keluar: log dan kirim JSON agar tidak FUNCTION_INVOCATION_FAILED\r\n+    console.error('[db-test] error:', e?.code, e?.message);\r\n+    res.status(500).json({\r\n+      ok: false,\r\n+      code: e?.code || null,\r\n+      error: e?.message || String(e),\r\n+      elapsed_ms: Date.now() - started\r\n+    });\r\n+  }\r\n+}\r\n"
                 }
             ],
             "date": 1761890262059,

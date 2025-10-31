@@ -3,11 +3,15 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 1,
             "patches": [
                 {
                     "date": 1761890029647,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1761890982393,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,63 @@\n+// File: /api/get-laporan.js\r\n+import 'dotenv/config'\r\n+import mysql from \"mysql2/promise\";\r\n+\r\n+export const runtime = 'nodejs';\r\n+export default async function handler(req, res) {\r\n+  // Add CORS headers\r\n+  res.setHeader(\"Access-Control-Allow-Credentials\", true);\r\n+  res.setHeader(\"Access-Control-Allow-Origin\", \"*\");\r\n+  res.setHeader(\"Access-Control-Allow-Methods\", \"GET,OPTIONS\");\r\n+  res.setHeader(\r\n+    \"Access-Control-Allow-Headers\",\r\n+    \"X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version\"\r\n+  );\r\n+\r\n+  // Handle OPTIONS request\r\n+  if (req.method === \"OPTIONS\") {\r\n+    res.status(200).end();\r\n+    return;\r\n+  }\r\n+\r\n+  // Only allow GET requests\r\n+  if (req.method !== \"GET\") {\r\n+    return res.status(405).json({ message: \"Method Not Allowed\" });\r\n+  }\r\n+\r\n+  let connection;\r\n+\r\n+  try {\r\n+    // Connect to the database\r\n+    connection = await mysql.createConnection({\r\n+      host: process.env.DB_HOST,\r\n+      port: process.env.DB_PORT,\r\n+      user: process.env.DB_USER,\r\n+      password: process.env.DB_PASSWORD,\r\n+      database: process.env.DB_NAME,\r\n+      connectTimeout: 15000,\r\n+    });\r\n+\r\n+    // Fetch data\r\n+    const [rows] = await connection.execute(\r\n+      \"SELECT * FROM laporan_kanker ORDER BY tanggal DESC\"\r\n+    );\r\n+\r\n+    // Return the results\r\n+    res.status(200).json(rows);\r\n+  } catch (error) {\r\n+    console.error(\"Gagal mengambil data:\", error);\r\n+    res.status(500).json({\r\n+      message: \"Terjadi kesalahan server\",\r\n+      error: error.message,\r\n+      details: error.code,\r\n+    });\r\n+  } finally {\r\n+    if (connection) {\r\n+      try {\r\n+        await connection.end();\r\n+      } catch (err) {\r\n+        console.error(\"Error closing database connection:\", err);\r\n+      }\r\n+    }\r\n+  }\r\n+}\r\n"
                 }
             ],
             "date": 1761890029647,

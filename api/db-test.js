@@ -1,44 +1,36 @@
-// api/db-test.js
+export const runtime = 'nodejs';
 
-import mysql from "mysql2/promise"
+import mysql from 'mysql2/promise';
 
 export default async function handler(req, res) {
-  // Add CORS headers
-  res.setHeader("Access-Control-Allow-Credentials", true);
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
-  );
-
+  const started = Date.now();
   try {
-    // Replace these with your actual database credentials
-    const connection = await mysql.createConnection({
-      host: process.env.DB_HOST,
+    const conn = await mysql.createConnection({
+      host: process.env.DB_HOST,                 // pastikan BUKAN DB_HOS
+      port: Number(process.env.DB_PORT || 3306),
       user: process.env.DB_USER,
-      port: process.env.DB_PORT,
-      password: process.env.DB_PASSWORD,
+      password: process.env.DB_PASSWORD || process.env.DB_PASS,
       database: process.env.DB_NAME,
-      connectTimeout: 10000,
-    })
+      // ssl: { rejectUnauthorized: true }, // aktifkan jika DB mewajibkan SSL
+      connectTimeout: 10000
+    });
 
-    // If connection successful
+    const [rows] = await conn.query('SELECT 1 AS ok');
+    await conn.end();
+
     res.status(200).json({
-      status: "success",
-      message: "Database connection successful",
-    })
-
-    // Close connection
-    await connection.end()
-  } catch (error) {
+      ok: true,
+      rows,
+      elapsed_ms: Date.now() - started
+    });
+  } catch (e) {
+    // Jangan biarkan throw keluar: log dan kirim JSON agar tidak FUNCTION_INVOCATION_FAILED
+    console.error('[db-test] error:', e?.code, e?.message);
     res.status(500).json({
-      status: "error",
-      message: "Database connection failed",
-      error: {
-        code: error.code,
-        message: error.message,
-      },
-    })
+      ok: false,
+      code: e?.code || null,
+      error: e?.message || String(e),
+      elapsed_ms: Date.now() - started
+    });
   }
 }

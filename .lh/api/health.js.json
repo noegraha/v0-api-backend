@@ -1,0 +1,18 @@
+{
+    "sourceFile": "api/health.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1761890931742,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1761890931742,
+            "name": "Commit-0",
+            "content": "export const runtime = 'nodejs';\r\n\r\nexport default async function handler(req, res) {\r\n  res.status(200).json({\r\n    ok: true,\r\n    env: {\r\n      DB_HOST: !!process.env.DB_HOST,\r\n      DB_USER: !!process.env.DB_USER,\r\n      DB_NAME: !!process.env.DB_NAME,\r\n      DB_PORT: process.env.DB_PORT || '3306'\r\n    }\r\n  });\r\n}\r\n"
+        }
+    ]
+}

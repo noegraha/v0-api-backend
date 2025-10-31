@@ -1,0 +1,18 @@
+{
+    "sourceFile": "api/ping.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1761890994721,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1761890994721,
+            "name": "Commit-0",
+            "content": "// api/ping.js\r\nexport const runtime = 'nodejs';\r\nexport default function handler(req, res) {\r\n  res.status(200).json({\r\n    message: \"pong\",\r\n    timestamp: new Date().toISOString(),\r\n  })\r\n}\r\n"
+        }
+    ]
+}
