@@ -1,0 +1,18 @@
+{
+    "sourceFile": "package.json",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1761878855879,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1761878855879,
+            "name": "Commit-0",
+            "content": "{\r\n  \"name\": \"v0-api-backend\",\r\n  \"version\": \"1.0.0\",\r\n  \"description\": \"Minimal package manifest for the v0-api-backend serverless API\",\r\n  \"type\": \"module\",\r\n  \"main\": \"api/index.js\",\r\n  \"scripts\": {\r\n    \"start\": \"node api/index.js\",\r\n    \"dev\": \"node api/index.js\",\r\n    \"test\": \"echo \\\"No tests specified\\\" && exit 0\"\r\n  },\r\n  \"engines\": {\r\n    \"node\": \">=16\"\r\n  },\r\n  \"dependencies\": {\r\n    \"mysql2\": \"^3.3.2\"\r\n  },\r\n  \"license\": \"MIT\"\r\n}"
+        }
+    ]
+}

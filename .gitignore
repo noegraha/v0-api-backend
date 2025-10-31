@@ -1,3 +1,6 @@
 package.json
 .env
 .vercel
+.lh/.env.json
+.gitignore
+/node_modules
