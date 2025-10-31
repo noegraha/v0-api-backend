@@ -1,3 +1,4 @@
+import 'dotenv/config'
 import express from 'express'
 import handlerIndex from './api/index.js'
 import handlerPing from './api/ping.js'
