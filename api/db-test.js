@@ -11,11 +11,11 @@ export default async function handler(req, res) {
     "Access-Control-Allow-Headers",
     "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
   );
-  
+
   try {
     // Replace these with your actual database credentials
     const connection = await mysql.createConnection({
-      host: process.env.DB_HOS,
+      host: process.env.DB_HOST,
       user: process.env.DB_USER,
       port: process.env.DB_PORT,
       password: process.env.DB_PASSWORD,

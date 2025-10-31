@@ -1,0 +1,18 @@
+{
+    "sourceFile": "api/db-test.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1761890262059,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1761890262059,
+            "name": "Commit-0",
+            "content": "// api/db-test.js\r\n\r\nimport mysql from \"mysql2/promise\"\r\n\r\nexport default async function handler(req, res) {\r\n  // Add CORS headers\r\n  res.setHeader(\"Access-Control-Allow-Credentials\", true);\r\n  res.setHeader(\"Access-Control-Allow-Origin\", \"*\");\r\n  res.setHeader(\"Access-Control-Allow-Methods\", \"GET,OPTIONS\");\r\n  res.setHeader(\r\n    \"Access-Control-Allow-Headers\",\r\n    \"X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version\"\r\n  );\r\n\r\n  try {\r\n    // Replace these with your actual database credentials\r\n    const connection = await mysql.createConnection({\r\n      host: process.env.DB_HOST,\r\n      user: process.env.DB_USER,\r\n      port: process.env.DB_PORT,\r\n      password: process.env.DB_PASSWORD,\r\n      database: process.env.DB_NAME,\r\n      connectTimeout: 10000,\r\n    })\r\n\r\n    // If connection successful\r\n    res.status(200).json({\r\n      status: \"success\",\r\n      message: \"Database connection successful\",\r\n    })\r\n\r\n    // Close connection\r\n    await connection.end()\r\n  } catch (error) {\r\n    res.status(500).json({\r\n      status: \"error\",\r\n      message: \"Database connection failed\",\r\n      error: {\r\n        code: error.code,\r\n        message: error.message,\r\n      },\r\n    })\r\n  }\r\n}\r\n"
+        }
+    ]
+}
