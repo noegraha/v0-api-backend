@@ -1,0 +1,18 @@
+{
+    "sourceFile": "api/random-quote.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1763431405977,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1763431405976,
+            "name": "Commit-0",
+            "content": "// api/random-quote.js\r\nexport default async function handler(req, res) {\r\n    if (req.method !== \"GET\") {\r\n        res.setHeader(\"Allow\", [\"GET\"]);\r\n        return res.status(405).json({ message: \"Method Not Allowed\" });\r\n    }\r\n\r\n    try {\r\n        const apiRes = await fetch(\r\n            \"https://quotes.liupurnomo.com/api/quotes/random\"\r\n        );\r\n\r\n        if (!apiRes.ok) {\r\n            throw new Error(\"Failed to fetch from quotes API\");\r\n        }\r\n\r\n        const data = await apiRes.json();\r\n\r\n        // Optional: kalau nanti mau diakses dari domain lain juga\r\n        res.setHeader(\"Access-Control-Allow-Origin\", \"*\");\r\n        res.setHeader(\"Content-Type\", \"application/json\");\r\n\r\n        return res.status(200).json(data);\r\n    } catch (err) {\r\n        console.error(\"Error fetch quote:\", err.message);\r\n        return res.status(500).json({\r\n            status: \"ERROR\",\r\n            message: \"Gagal ambil quote dari server proxy\",\r\n        });\r\n    }\r\n}\r\n"
+        }
+    ]
+}
