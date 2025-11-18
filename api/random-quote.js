@@ -1,9 +1,8 @@
-// File: /api/random-quote.js
-
+// File: /api/random-quote-id.js
 export const runtime = "nodejs";
 
 export default async function handler(req, res) {
-    // Tambah CORS headers (samakan dengan get-laporan)
+    // CORS (samakan dengan get-laporan.js)
     res.setHeader("Access-Control-Allow-Credentials", true);
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Methods", "GET,OPTIONS");
@@ -12,36 +11,36 @@ export default async function handler(req, res) {
         "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version"
     );
 
-    // Handle preflight
+    // Preflight
     if (req.method === "OPTIONS") {
         res.status(200).end();
         return;
     }
 
-    // Hanya izinkan GET
+    // Izinkan hanya GET
     if (req.method !== "GET") {
         return res.status(405).json({ message: "Method Not Allowed" });
     }
 
     try {
-        // Panggil API quotes eksternal
+        // 🔥 Generate random ID 1–960
+        const randomId = Math.floor(Math.random() * 960) + 1;
+        console.log("Random ID:", randomId);
+
+        // Ambil quote by ID
         const apiRes = await fetch(
-            "https://quotes.liupurnomo.com/api/quotes/random"
+            `https://quotes.liupurnomo.com/api/quotes/${randomId}`
         );
 
-        if (!apiRes.ok) {
-            throw new Error("Failed to fetch from quotes API");
-        }
+        const json = await apiRes.json();
 
-        const data = await apiRes.json();
-
-        // Langsung teruskan response-nya
-        return res.status(200).json(data);
+        return res.status(200).json(json);
     } catch (error) {
-        console.error("Gagal ambil quote:", error);
+        console.error("Gagal mengambil quote:", error);
+
         return res.status(500).json({
             status: "ERROR",
-            message: "Gagal ambil quote dari server proxy",
+            message: "Gagal mengambil quote dari server",
             error: error.message,
         });
     }

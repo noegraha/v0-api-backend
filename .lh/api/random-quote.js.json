@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 1,
+            "activePatchIndex": 2,
             "patches": [
                 {
                     "date": 1763431405977,
@@ -12,6 +12,10 @@
                 {
                     "date": 1763431853346,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -25,5 +25,24 @@\n \r\n     try {\r\n         // Panggil API quotes eksternal\r\n         const apiRes = await fetch(\r\n-            \"https://quotes.liupurnomo.com/api/quotes/random\"\n\\ No newline at end of file\n+            \"https://quotes.liupurnomo.com/api/quotes/random\"\r\n+        );\r\n+\r\n+        if (!apiRes.ok) {\r\n+            throw new Error(\"Failed to fetch from quotes API\");\r\n+        }\r\n+\r\n+        const data = await apiRes.json();\r\n+\r\n+        // Langsung teruskan response-nya\r\n+        return res.status(200).json(data);\r\n+    } catch (error) {\r\n+        console.error(\"Gagal ambil quote:\", error);\r\n+        return res.status(500).json({\r\n+            status: \"ERROR\",\r\n+            message: \"Gagal ambil quote dari server proxy\",\r\n+            error: error.message,\r\n+        });\r\n+    }\r\n+}\r\n"
+                },
+                {
+                    "date": 1763432466994,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,47 @@\n+// File: /api/random-quote-id.js\r\n+export const runtime = \"nodejs\";\r\n+\r\n+export default async function handler(req, res) {\r\n+    // CORS (samakan dengan get-laporan.js)\r\n+    res.setHeader(\"Access-Control-Allow-Credentials\", true);\r\n+    res.setHeader(\"Access-Control-Allow-Origin\", \"*\");\r\n+    res.setHeader(\"Access-Control-Allow-Methods\", \"GET,OPTIONS\");\r\n+    res.setHeader(\r\n+        \"Access-Control-Allow-Headers\",\r\n+        \"X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version\"\r\n+    );\r\n+\r\n+    // Preflight\r\n+    if (req.method === \"OPTIONS\") {\r\n+        res.status(200).end();\r\n+        return;\r\n+    }\r\n+\r\n+    // Izinkan hanya GET\r\n+    if (req.method !== \"GET\") {\r\n+        return res.status(405).json({ message: \"Method Not Allowed\" });\r\n+    }\r\n+\r\n+    try {\r\n+        // 🔥 Generate random ID 1–960\r\n+        const randomId = Math.floor(Math.random() * 960) + 1;\r\n+        console.log(\"Random ID:\", randomId);\r\n+\r\n+        // Ambil quote by ID\r\n+        const apiRes = await fetch(\r\n+            `https://quotes.liupurnomo.com/api/quotes/${randomId}`\r\n+        );\r\n+\r\n+        const json = await apiRes.json();\r\n+\r\n+        return res.status(200).json(json);\r\n+    } catch (error) {\r\n+        console.error(\"Gagal mengambil quote:\", error);\r\n+\r\n+        return res.status(500).json({\r\n+            status: \"ERROR\",\r\n+            message: \"Gagal mengambil quote dari server\",\r\n+            error: error.message,\r\n+        });\r\n+    }\r\n+}\r\n"
                 }
             ],
             "date": 1763431405976,
