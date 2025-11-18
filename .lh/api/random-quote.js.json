@@ -3,11 +3,15 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 1,
             "patches": [
                 {
                     "date": 1763431405977,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1763431853346,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -25,5 +25,24 @@\n \r\n     try {\r\n         // Panggil API quotes eksternal\r\n         const apiRes = await fetch(\r\n-            \"https://quotes.liupurnomo.com/api/quotes/random\"\n\\ No newline at end of file\n+            \"https://quotes.liupurnomo.com/api/quotes/random\"\r\n+        );\r\n+\r\n+        if (!apiRes.ok) {\r\n+            throw new Error(\"Failed to fetch from quotes API\");\r\n+        }\r\n+\r\n+        const data = await apiRes.json();\r\n+\r\n+        // Langsung teruskan response-nya\r\n+        return res.status(200).json(data);\r\n+    } catch (error) {\r\n+        console.error(\"Gagal ambil quote:\", error);\r\n+        return res.status(500).json({\r\n+            status: \"ERROR\",\r\n+            message: \"Gagal ambil quote dari server proxy\",\r\n+            error: error.message,\r\n+        });\r\n+    }\r\n+}\r\n"
                 }
             ],
             "date": 1763431405976,
