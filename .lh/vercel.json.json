@@ -1,0 +1,18 @@
+{
+    "sourceFile": "vercel.json",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1763526632873,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1763526632873,
+            "name": "Commit-0",
+            "content": "{\r\n  \"version\": 2,\r\n  \"builds\": [{ \"src\": \"api/**/*.js\", \"use\": \"@vercel/node\" }],\r\n  \"routes\": [\r\n    { \"src\": \"/api/simpan-data\", \"dest\": \"/api/simpan-data.js\" },\r\n    { \"src\": \"/api/get-laporan\", \"dest\": \"/api/get-laporan.js\" },\r\n    {\r\n      \"src\": \"/api/random-quote\",\r\n      \"dest\": \"/api/random-quote.js\"\r\n    },\r\n    { \"src\": \"/api/db-test\", \"dest\": \"/api/db-test.js\" },\r\n    { \"src\": \"/health\", \"dest\": \"/api/health.js\" },\r\n    { \"src\": \"/ping\", \"dest\": \"/api/ping.js\" },\r\n    { \"src\": \"/api\", \"dest\": \"/api/index.js\" },\r\n    { \"src\": \"/\", \"dest\": \"/api/index.js\" }\r\n  ]\r\n}\r\n"
+        }
+    ]
+}
