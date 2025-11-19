@@ -3,11 +3,15 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 0,
+            "activePatchIndex": 1,
             "patches": [
                 {
                     "date": 1763526632873,
                     "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1763528683561,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,47 @@\n+{\r\n+  \"version\": 2,\r\n+  \"builds\": [\r\n+    {\r\n+      \"src\": \"api/**/*.js\",\r\n+      \"use\": \"@vercel/node\"\r\n+    }\r\n+  ],\r\n+  \"routes\": [\r\n+    {\r\n+      \"src\": \"/api/simpan-data\",\r\n+      \"dest\": \"/api/simpan-data.js\"\r\n+    },\r\n+    {\r\n+      \"src\": \"/api/get-laporan\",\r\n+      \"dest\": \"/api/get-laporan.js\"\r\n+    },\r\n+    {\r\n+      \"src\": \"/api/random-quote\",\r\n+      \"dest\": \"/api/random-quote.js\"\r\n+    },\r\n+    {\r\n+      \"src\": \"/api/motivation-quote\",\r\n+      \"dest\": \"/api/motivation-quote.js\"\r\n+    },\r\n+    {\r\n+      \"src\": \"/api/db-test\",\r\n+      \"dest\": \"/api/db-test.js\"\r\n+    },\r\n+    {\r\n+      \"src\": \"/health\",\r\n+      \"dest\": \"/api/health.js\"\r\n+    },\r\n+    {\r\n+      \"src\": \"/ping\",\r\n+      \"dest\": \"/api/ping.js\"\r\n+    },\r\n+    {\r\n+      \"src\": \"/api\",\r\n+      \"dest\": \"/api/index.js\"\r\n+    },\r\n+    {\r\n+      \"src\": \"/\",\r\n+      \"dest\": \"/api/index.js\"\r\n+    }\r\n+  ]\r\n+}\n\\ No newline at end of file\n"
                 }
             ],
             "date": 1763526632873,

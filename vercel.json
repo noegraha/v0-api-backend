@@ -20,6 +20,10 @@
       "dest": "/api/random-quote.js"
     },
     {
+      "src": "/api/motivation-quote",
+      "dest": "/api/motivation-quote.js"
+    },
+    {
       "src": "/api/db-test",
       "dest": "/api/db-test.js"
     },
