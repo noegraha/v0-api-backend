@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 3,
+            "activePatchIndex": 4,
             "patches": [
                 {
                     "date": 1761883310047,
@@ -20,6 +20,10 @@
                 {
                     "date": 1761889404968,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -25,32 +25,4 @@\n const PORT = Number(process.env.PORT) || 3000\r\n app.listen(PORT, () => console.log(`Server listening: http://localhost:${PORT}`))\r\n \r\n export default app\r\n-import express from 'express'\r\n-import 'dotenv/config'\r\n-import handlerIndex from './api/index.js'\r\n-import handlerPing from './api/ping.js'\r\n-import handlerHealth from './api/health.js'\r\n-import handlerSimpan from './api/simpan-data.js'\r\n-import handlerGetLaporan from './api/get-laporan.js'\r\n-import middleware from './api/_middleware.js'\r\n-\r\n-const app = express()\r\n-\r\n-// Parse JSON bodies\r\n-app.use(express.json())\r\n-\r\n-// Apply your middleware (CORS, OPTIONS handling)\r\n-app.use((req, res, next) => middleware(req, res, next))\r\n-\r\n-// Routes mapping to existing handlers\r\n-app.get('/api', (req, res) => handlerIndex(req, res))\r\n-app.get('/api/ping', (req, res) => handlerPing(req, res))\r\n-app.get('/api/health', (req, res) => handlerHealth(req, res))\r\n-app.get('/api/get-laporan', (req, res) => handlerGetLaporan(req, res))\r\n-app.post('/api/simpan-data', (req, res) => handlerSimpan(req, res))\r\n-\r\n-const PORT = Number(process.env.PORT) || 3000\r\n-app.listen(PORT, () => console.log(`Server listening: http://localhost:${PORT}`))\r\n-\r\n-export default app\r\n"
+                },
+                {
+                    "date": 1763526373178,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -3,8 +3,9 @@\n import handlerIndex from './api/index.js'\r\n import handlerPing from './api/ping.js'\r\n import handlerHealth from './api/health.js'\r\n import handlerSimpan from './api/simpan-data.js'\r\n+import handlerGetQuote from './api/random-quote.js'\r\n import handlerGetLaporan from './api/get-laporan.js'\r\n import middleware from './api/_middleware.js'\r\n \r\n const app = express()\r\n@@ -19,8 +20,9 @@\n app.get('/api', (req, res) => handlerIndex(req, res))\r\n app.get('/api/ping', (req, res) => handlerPing(req, res))\r\n app.get('/api/health', (req, res) => handlerHealth(req, res))\r\n app.get('/api/get-laporan', (req, res) => handlerGetLaporan(req, res))\r\n+app.get('/api/random-quote', (req, res) => handlerGetQuote(req, res))\r\n app.post('/api/simpan-data', (req, res) => handlerSimpan(req, res))\r\n \r\n const PORT = Number(process.env.PORT) || 3000\r\n app.listen(PORT, () => console.log(`Server listening: http://localhost:${PORT}`))\r\n"
                 }
             ],
             "date": 1761883310047,
