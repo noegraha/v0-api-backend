@@ -28,13 +28,9 @@ export default async function handler(req, res) {
         console.log("Random ID:", randomId);
 
         // Ambil quote by ID
-        // const apiRes = await fetch(
-        //     `https://quotes.liupurnomo.com/api/quotes/${randomId}`
-        // );
         const apiRes = await fetch(
-            `https://quotes.liupurnomo.com/api/quotes/random?category=motivasi`
+            `https://quotes.liupurnomo.com/api/quotes/${randomId}`
         );
-
 
         const json = await apiRes.json();
 
