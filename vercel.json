@@ -12,6 +12,10 @@
       "dest": "/api/simpan-data.js"
     },
     {
+      "src": "/api/pusher/auth",
+      "dest": "/api/pusher/auth.js"
+    },
+    {
       "src": "/api/get-laporan",
       "dest": "/api/get-laporan.js"
     },

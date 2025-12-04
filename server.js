@@ -25,6 +25,7 @@ app.get('/api/get-laporan', (req, res) => handlerGetLaporan(req, res))
 app.get('/api/random-quote', (req, res) => handlerGetQuote(req, res))
 app.get('/api/motivation-quote', (req, res) => handlerGetMotivation(req, res))
 app.post('/api/simpan-data', (req, res) => handlerSimpan(req, res))
+app.post('/api/puhser/simpan-data', (req, res) => handlerAuth(req, res))
 
 const PORT = Number(process.env.PORT) || 3000
 app.listen(PORT, () => console.log(`Server listening: http://localhost:${PORT}`))
