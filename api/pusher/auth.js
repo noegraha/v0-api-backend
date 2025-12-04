@@ -15,11 +15,16 @@ const pusher = new Pusher({
 
 export default async function handler(req, res) {
     applyCors(res);
+
+    if (req.method === "OPTIONS") {
+        return res.status(200).end();
+    }
+
     if (req.method !== "POST") {
         return res.status(405).json({ error: "Method not allowed" });
     }
 
-    const { socket_id, channel_name, user_id, username } = req.body;
+    const { socket_id, channel_name, user_id, username, ip, host } = req.body;
 
     if (!user_id || !username) {
         return res.status(400).json({ error: "Missing user data" });
@@ -27,10 +32,13 @@ export default async function handler(req, res) {
 
     const presenceData = {
         user_id,
-        user_info: { username },
+        user_info: {
+            username,
+            ip: ip || "-",
+            host: host || "-",
+        },
     };
 
     const auth = pusher.authenticate(socket_id, channel_name, presenceData);
-
     res.send(auth);
 }
