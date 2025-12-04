@@ -1,4 +1,5 @@
 import Pusher from "pusher";
+import { applyCors } from '../_cors.js';
 
 export const config = {
     runtime: "nodejs",
@@ -13,6 +14,7 @@ const pusher = new Pusher({
 });
 
 export default async function handler(req, res) {
+    applyCors(res);
     if (req.method !== "POST") {
         return res.status(405).json({ error: "Method not allowed" });
     }

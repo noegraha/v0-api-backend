@@ -1,0 +1,18 @@
+{
+    "sourceFile": "api/_cors.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1764814488740,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1764814488740,
+            "name": "Commit-0",
+            "content": "// api/_cors.js\r\nexport function applyCors(res) {\r\n    res.setHeader('Access-Control-Allow-Credentials', 'true');\r\n    res.setHeader('Access-Control-Allow-Origin', '*');\r\n    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,POST,PUT,DELETE');\r\n    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');\r\n}"
+        }
+    ]
+}
