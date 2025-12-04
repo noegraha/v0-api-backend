@@ -1,9 +1,7 @@
 import Pusher from "pusher";
 import { applyCors } from '../_cors.js';
 
-export const config = {
-    runtime: "nodejs",
-};
+export const config = { runtime: "nodejs" };
 
 const pusher = new Pusher({
     appId: process.env.PUSHER_APP_ID,
@@ -16,27 +14,20 @@ const pusher = new Pusher({
 export default async function handler(req, res) {
     applyCors(res);
 
-    if (req.method === "OPTIONS") {
-        return res.status(200).end();
-    }
+    if (req.method === "OPTIONS") return res.status(200).end();
+    if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-    if (req.method !== "POST") {
-        return res.status(405).json({ error: "Method not allowed" });
-    }
-
-    const { socket_id, channel_name, user_id, username, ip, host } = req.body;
-
-    if (!user_id || !username) {
-        return res.status(400).json({ error: "Missing user data" });
-    }
+    const { socket_id, channel_name, user_id, username, name, ip, host, time } = req.body;
 
     const presenceData = {
         user_id,
         user_info: {
-            username,
-            ip: ip || "-",
-            host: host || "-",
-        },
+            username: username || name,
+            name: name || username,
+            ip: ip ?? "-",
+            host: host ?? "-",
+            time: time ?? new Date().toISOString(), // server-generated real time
+        }
     };
 
     const auth = pusher.authenticate(socket_id, channel_name, presenceData);
