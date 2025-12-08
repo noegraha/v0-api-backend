@@ -1,14 +1,22 @@
+// auth.js — versi Ably Pusher-Compatible
 import Pusher from "pusher";
 import { applyCors } from '../_cors.js';
 
 export const config = { runtime: "nodejs" };
 
+// Gunakan REST endpoint Ably dengan Pusher Protocol
 const pusher = new Pusher({
-    appId: process.env.PUSHER_APP_ID,
-    key: process.env.PUSHER_KEY,
-    secret: process.env.PUSHER_SECRET,
-    cluster: process.env.PUSHER_CLUSTER,
+    appId: process.env.ABLY_APP_ID,
+    key: process.env.ABLY_KEY_ID,       // KEY bagian depan sebelum ":"
+    secret: process.env.ABLY_KEY_SECRET, // SECRET bagian belakang setelah ":"
     useTLS: true,
+
+    // OVERRIDE HOST KE ABLY
+    host: "rest-pusher.ably.io",
+    port: 443,
+    scheme: "https",
+
+    // Cluster TIDAK DIPAKAI di Ably, jadi jangan isi
 });
 
 export default async function handler(req, res) {
@@ -26,10 +34,15 @@ export default async function handler(req, res) {
             name: name || username,
             ip: ip ?? "-",
             host: host ?? "-",
-            time: time ?? new Date().toISOString(), // server-generated real time
+            time: time ?? new Date().toISOString()
         }
     };
 
-    const auth = pusher.authenticate(socket_id, channel_name, presenceData);
-    res.send(auth);
+    try {
+        const auth = pusher.authenticate(socket_id, channel_name, presenceData);
+        return res.send(auth);
+    } catch (err) {
+        console.error("ABLY AUTH ERROR:", err);
+        return res.status(500).json({ error: "Auth failed" });
+    }
 }
