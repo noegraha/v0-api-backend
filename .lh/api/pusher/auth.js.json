@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 3,
+            "activePatchIndex": 4,
             "patches": [
                 {
                     "date": 1764814520744,
@@ -20,6 +20,10 @@
                 {
                     "date": 1765163876131,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,15 +1,23 @@\n+// auth.js — versi Ably Pusher-Compatible\r\n import Pusher from \"pusher\";\r\n import { applyCors } from '../_cors.js';\r\n \r\n export const config = { runtime: \"nodejs\" };\r\n \r\n+// Gunakan REST endpoint Ably dengan Pusher Protocol\r\n const pusher = new Pusher({\r\n-    appId: process.env.PUSHER_APP_ID,\r\n-    key: process.env.PUSHER_KEY,\r\n-    secret: process.env.PUSHER_SECRET,\r\n-    cluster: process.env.PUSHER_CLUSTER,\r\n+    appId: process.env.ABLY_APP_ID,\r\n+    key: process.env.ABLY_KEY_ID,       // KEY bagian depan sebelum \":\"\r\n+    secret: process.env.ABLY_KEY_SECRET, // SECRET bagian belakang setelah \":\"\r\n     useTLS: true,\r\n+\r\n+    // OVERRIDE HOST KE ABLY\r\n+    host: \"rest-pusher.ably.io\",\r\n+    port: 443,\r\n+    scheme: \"https\",\r\n+\r\n+    // Cluster TIDAK DIPAKAI di Ably, jadi jangan isi\r\n });\r\n \r\n export default async function handler(req, res) {\r\n     applyCors(res);\r\n@@ -25,11 +33,16 @@\n             username: username || name,\r\n             name: name || username,\r\n             ip: ip ?? \"-\",\r\n             host: host ?? \"-\",\r\n-            time: time ?? new Date().toISOString(), // server-generated real time\r\n+            time: time ?? new Date().toISOString()\r\n         }\r\n     };\r\n \r\n-    const auth = pusher.authenticate(socket_id, channel_name, presenceData);\r\n-    res.send(auth);\r\n+    try {\r\n+        const auth = pusher.authenticate(socket_id, channel_name, presenceData);\r\n+        return res.send(auth);\r\n+    } catch (err) {\r\n+        console.error(\"ABLY AUTH ERROR:\", err);\r\n+        return res.status(500).json({ error: \"Auth failed\" });\r\n+    }\r\n }\r\n"
+                },
+                {
+                    "date": 1765175764119,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,44 @@\n+// auth.js — versi Ably Pusher-Compatible\r\n+import Pusher from \"pusher\";\r\n+import { applyCors } from '../_cors.js';\r\n+\r\n+export const config = { runtime: \"nodejs\" };\r\n+\r\n+// Gunakan REST endpoint Ably dengan Pusher Protocol\r\n+const pusher = new Pusher({\r\n+    appId: process.env.ABLY_APP_ID,\r\n+    key: process.env.ABLY_KEY_ID,\r\n+    secret: process.env.ABLY_KEY_SECRET,\r\n+    host: \"rest-pusher.ably.io\",\r\n+    port: 443,\r\n+    scheme: \"https\",\r\n+    useTLS: true,\r\n+});\r\n+\r\n+export default async function handler(req, res) {\r\n+    applyCors(res);\r\n+\r\n+    if (req.method === \"OPTIONS\") return res.status(200).end();\r\n+    if (req.method !== \"POST\") return res.status(405).json({ error: \"Method not allowed\" });\r\n+\r\n+    const { socket_id, channel_name, user_id, username, name, ip, host, time } = req.body;\r\n+\r\n+    const presenceData = {\r\n+        user_id,\r\n+        user_info: {\r\n+            username: username || name,\r\n+            name: name || username,\r\n+            ip: ip ?? \"-\",\r\n+            host: host ?? \"-\",\r\n+            time: time ?? new Date().toISOString()\r\n+        }\r\n+    };\r\n+\r\n+    try {\r\n+        const auth = pusher.authenticate(socket_id, channel_name, presenceData);\r\n+        return res.send(auth);\r\n+    } catch (err) {\r\n+        console.error(\"ABLY AUTH ERROR:\", err);\r\n+        return res.status(500).json({ error: \"Auth failed\" });\r\n+    }\r\n+}\r\n"
                 }
             ],
             "date": 1764814520744,

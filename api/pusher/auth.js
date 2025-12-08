@@ -7,16 +7,12 @@ export const config = { runtime: "nodejs" };
 // Gunakan REST endpoint Ably dengan Pusher Protocol
 const pusher = new Pusher({
     appId: process.env.ABLY_APP_ID,
-    key: process.env.ABLY_KEY_ID,       // KEY bagian depan sebelum ":"
-    secret: process.env.ABLY_KEY_SECRET, // SECRET bagian belakang setelah ":"
-    useTLS: true,
-
-    // OVERRIDE HOST KE ABLY
+    key: process.env.ABLY_KEY_ID,
+    secret: process.env.ABLY_KEY_SECRET,
     host: "rest-pusher.ably.io",
     port: 443,
     scheme: "https",
-
-    // Cluster TIDAK DIPAKAI di Ably, jadi jangan isi
+    useTLS: true,
 });
 
 export default async function handler(req, res) {
