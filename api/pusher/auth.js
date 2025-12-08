@@ -6,9 +6,9 @@ export const config = { runtime: "nodejs" };
 
 // Gunakan REST endpoint Ably dengan Pusher Protocol
 const pusher = new Pusher({
-    appId: process.env.ABLY_APP_ID,
-    key: process.env.ABLY_KEY_ID,
-    secret: process.env.ABLY_KEY_SECRET,
+    appId: process.env.ABLY_APP_ID,            // R2yUfw
+    key: `${process.env.ABLY_APP_ID}.${process.env.ABLY_KEY_ID}`,
+    secret: process.env.ABLY_KEY_SECRET,       // shDrY-...
     host: "rest-pusher.ably.io",
     port: 443,
     scheme: "https",
