@@ -1,11 +1,8 @@
+// api/pusher/auth.js
 import Pusher from "pusher";
-import { applyCors } from "../_cors.js";
+import { applyCors } from "../_cors.js"; // sesuaikan path kalau beda
 
 export const config = { runtime: "nodejs" };
-
-// Dashboard SMG hanya boleh mengakses dari IP ini
-const ALLOW_IP = "182.168.0.235";
-const ALLOW_ROLE = "SMG";
 
 const pusher = new Pusher({
     appId: process.env.ABLY_APP_ID,
@@ -17,59 +14,56 @@ const pusher = new Pusher({
     useTLS: true,
 });
 
+const safe = (v, def = "-") =>
+    v === undefined || v === null || v === "" ? def : v;
+
 export default async function handler(req, res) {
     applyCors(res);
+
+    if (req.method === "OPTIONS") return res.status(200).end();
     if (req.method !== "POST")
         return res.status(405).json({ error: "Method not allowed" });
 
-    const {
-        socket_id,
-        channel_name,
-        user_id,
-        username,
-        name,
-        ip,
-        host,
-        role,
-        time,
-    } = req.body;
-
-    const safeRole = (role || "").toUpperCase();
-    const safeIP = ip || "";
-
-    // =========================================================
-    // 1️⃣ Semua user boleh AUTH untuk presence-online
-    //    karena dashboard butuh tau siapa online/offline
-    // =========================================================
-    const presenceData = {
-        user_id,
-        user_info: {
+    try {
+        const {
+            socket_id,
+            channel_name,
+            user_id,
             username,
             name,
             ip,
             host,
-            role: safeRole,
-            time: time ?? new Date().toISOString(),
-        },
-    };
+            role,
+            time,
+        } = req.body;
 
-    // =========================================================
-    // 2️⃣ Filtering SUBSCRIBE (bukan membership)
-    //    Hanya role SMG dan IP dashboard boleh subscribe
-    // =========================================================
-    const isSMGDashboard = role === "SMG" && ip === ALLOW_IP;
-
-    // Semua user boleh authenticate presence-online
-    if (channel_name === "presence-online") {
-        // Jika user bukan SMG dashboard → jangan izinkan subscribe
-        if (!isSMGDashboard) {
-            console.log("⛔ Non SMG blocked from SUBSCRIBING, but membership allowed.");
-            // penting: authenticate tetap dikirim kan, agar mereka masuk membership
-            return res.send(pusher.authenticate(socket_id, channel_name, presenceData));
+        if (!socket_id || !channel_name || !user_id) {
+            return res.status(400).json({ error: "Invalid auth request" });
         }
+
+        const presenceData = {
+            user_id,
+            user_info: {
+                username: safe(username),
+                name: safe(name, username),
+                ip: safe(ip),
+                host: safe(host),
+                role: safe(role).toUpperCase(),
+                time: time ?? new Date().toISOString(),
+            },
+        };
+
+        const auth = pusher.authenticate(socket_id, channel_name, presenceData);
+        console.log("✅ AUTH OK:", {
+            ch: channel_name,
+            user_id,
+            role: presenceData.user_info.role,
+            ip: presenceData.user_info.ip,
+        });
+
+        return res.send(auth);
+    } catch (err) {
+        console.error("❌ AUTH ERROR:", err);
+        return res.status(500).json({ error: "Auth failed" });
     }
-
-    // SMG dashboard: boleh subscribe
-    return res.send(pusher.authenticate(socket_id, channel_name, presenceData));
-
 }
