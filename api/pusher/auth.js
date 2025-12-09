@@ -5,7 +5,8 @@ import { applyCors } from "../_cors.js";
 export const config = { runtime: "nodejs" };
 
 // IP yang diizinkan melakukan monitoring (hanya dashboard admin)
-const ALLOWED_IP = "182.168.0.235";
+const ALLOW_IP = "182.168.0.235";
+const ALLOW_MAC = "A4-BB-6D-BA-66-F4"; // contoh dari log kamu
 
 // Setup Ably (REST Pusher Protocol)
 const pusher = new Pusher({
@@ -40,7 +41,8 @@ export default async function handler(req, res) {
         🔐 1. SECURITY CHECK — FILTER IP
         HANYA IP tertentu yang boleh subscribe presence channel
     ======================================================== */
-    if (ip !== ALLOWED_IP) {
+
+    if (ip !== ALLOW_IP && host !== ALLOW_MAC) {
         return res.status(403).json({
             error: "Access denied: Your device is not allowed to subscribe.",
         });
