@@ -57,25 +57,19 @@ export default async function handler(req, res) {
     // 2️⃣ Filtering SUBSCRIBE (bukan membership)
     //    Hanya role SMG dan IP dashboard boleh subscribe
     // =========================================================
-    const isDashboardSMG = safeRole === ALLOW_ROLE && safeIP === ALLOW_IP;
+    const isSMGDashboard = role === "SMG" && ip === ALLOW_IP;
 
-    if (channel_name === "presence-online" && !isDashboardSMG) {
-        // ❌ Block subscribe
-        console.log("❌ BLOCKED SUBSCRIBE:", { role: safeRole, ip: safeIP });
-        return res.status(403).json({
-            error: "Only SMG dashboard user can subscribe",
-        });
+    // Semua user boleh authenticate presence-online
+    if (channel_name === "presence-online") {
+        // Jika user bukan SMG dashboard → jangan izinkan subscribe
+        if (!isSMGDashboard) {
+            console.log("⛔ Non SMG blocked from SUBSCRIBING, but membership allowed.");
+            // penting: authenticate tetap dikirim kan, agar mereka masuk membership
+            return res.send(pusher.authenticate(socket_id, channel_name, presenceData));
+        }
     }
 
-    // =========================================================
-    // 3️⃣ SMG dengan IP dashboard → boleh subscribe
-    // =========================================================
-    try {
-        const auth = pusher.authenticate(socket_id, channel_name, presenceData);
-        console.log("✅ AUTH OK:", { role: safeRole, ip: safeIP });
-        return res.send(auth);
-    } catch (err) {
-        console.log("❌ AUTH ERROR:", err);
-        return res.status(500).json({ error: "Auth failed" });
-    }
+    // SMG dashboard: boleh subscribe
+    return res.send(pusher.authenticate(socket_id, channel_name, presenceData));
+
 }
