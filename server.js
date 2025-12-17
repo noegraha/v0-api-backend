@@ -1,13 +1,11 @@
 import 'dotenv/config'
 import express from 'express'
 import handlerIndex from './api/index.js'
-import handlerPing from './api/ping.js'
-import handlerHealth from './api/health.js'
 import handlerSimpan from './api/simpan-data.js'
 import handlerGetQuote from './api/random-quote.js'
 import handlerGetMotivation from './api/motivation-quote.js'
 import handlerGetLaporan from './api/get-laporan.js'
-import middleware from './api/_middleware.js'
+import middleware from './lib/_middleware.js'
 import faceRoute from "./api/azure/face.route.js";
 const app = express()
 
@@ -18,9 +16,6 @@ app.use(express.json())
 app.use((req, res, next) => middleware(req, res, next))
 app.use("/api/azure", faceRoute);
 // Routes mapping to existing handlers
-app.get('/api', (req, res) => handlerIndex(req, res))
-app.get('/api/ping', (req, res) => handlerPing(req, res))
-app.get('/api/health', (req, res) => handlerHealth(req, res))
 app.get('/api/get-laporan', (req, res) => handlerGetLaporan(req, res))
 app.get('/api/random-quote', (req, res) => handlerGetQuote(req, res))
 app.get('/api/motivation-quote', (req, res) => handlerGetMotivation(req, res))

@@ -3,7 +3,7 @@
     "activeCommit": 0,
     "commits": [
         {
-            "activePatchIndex": 16,
+            "activePatchIndex": 17,
             "patches": [
                 {
                     "date": 1764814520744,
@@ -72,6 +72,10 @@
                 {
                     "date": 1765280745214,
                     "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,69 @@\n+// api/pusher/auth.js\r\n+import Pusher from \"pusher\";\r\n+import { applyCors } from \"../_cors.js\"; // sesuaikan path kalau beda\r\n+\r\n+export const config = { runtime: \"nodejs\" };\r\n+\r\n+const pusher = new Pusher({\r\n+    appId: process.env.ABLY_APP_ID,\r\n+    key: `${process.env.ABLY_APP_ID}.${process.env.ABLY_KEY_ID}`, // R2yUfw.3C47dg\r\n+    secret: process.env.ABLY_KEY_SECRET,\r\n+    host: \"rest-pusher.ably.io\",\r\n+    port: 443,\r\n+    scheme: \"https\",\r\n+    useTLS: true,\r\n+});\r\n+\r\n+const safe = (v, def = \"-\") =>\r\n+    v === undefined || v === null || v === \"\" ? def : v;\r\n+\r\n+export default async function handler(req, res) {\r\n+    applyCors(res);\r\n+\r\n+    if (req.method === \"OPTIONS\") return res.status(200).end();\r\n+    if (req.method !== \"POST\")\r\n+        return res.status(405).json({ error: \"Method not allowed\" });\r\n+\r\n+    try {\r\n+        const {\r\n+            socket_id,\r\n+            channel_name,\r\n+            user_id,\r\n+            username,\r\n+            name,\r\n+            ip,\r\n+            host,\r\n+            role,\r\n+            time,\r\n+        } = req.body;\r\n+\r\n+        if (!socket_id || !channel_name || !user_id) {\r\n+            return res.status(400).json({ error: \"Invalid auth request\" });\r\n+        }\r\n+\r\n+        const presenceData = {\r\n+            user_id,\r\n+            user_info: {\r\n+                username: safe(username),\r\n+                name: safe(name, username),\r\n+                ip: safe(ip),\r\n+                host: safe(host),\r\n+                role: safe(role).toUpperCase(),\r\n+                time: time ?? new Date().toISOString(),\r\n+            },\r\n+        };\r\n+\r\n+        const auth = pusher.authenticate(socket_id, channel_name, presenceData);\r\n+        console.log(\"✅ AUTH OK:\", {\r\n+            ch: channel_name,\r\n+            user_id,\r\n+            role: presenceData.user_info.role,\r\n+            ip: presenceData.user_info.ip,\r\n+        });\r\n+\r\n+        return res.send(auth);\r\n+    } catch (err) {\r\n+        console.error(\"❌ AUTH ERROR:\", err);\r\n+        return res.status(500).json({ error: \"Auth failed\" });\r\n+    }\r\n+}\r\n"
+                },
+                {
+                    "date": 1766014884724,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,7 +1,7 @@\n // api/pusher/auth.js\r\n import Pusher from \"pusher\";\r\n-import { applyCors } from \"../_cors.js\"; // sesuaikan path kalau beda\r\n+import { applyCors } from \"../../lib/_cors.js\"; // sesuaikan path kalau beda\r\n \r\n export const config = { runtime: \"nodejs\" };\r\n \r\n const pusher = new Pusher({\r\n"
                 }
             ],
             "date": 1764814520744,

@@ -1,6 +1,6 @@
 // api/pusher/auth.js
 import Pusher from "pusher";
-import { applyCors } from "../_cors.js"; // sesuaikan path kalau beda
+import { applyCors } from "../../lib/_cors.js"; // sesuaikan path kalau beda
 
 export const config = { runtime: "nodejs" };
 
