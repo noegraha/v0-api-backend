@@ -1,0 +1,42 @@
+{
+    "sourceFile": "api/azure/azureFace.service.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 6,
+            "patches": [
+                {
+                    "date": 1765953511585,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1765955207031,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,12 +1,14 @@\n-import * as msRest from \"@azure/ms-rest-js\";\r\n-import Face from \"@azure/cognitiveservices-face\";\r\n+import { FaceClient } from \"@azure/cognitiveservices-face\";\r\n+import { ApiKeyCredentials } from \"@azure/ms-rest-js\";\r\n \r\n-const credentials = new msRest.ApiKeyCredentials({\r\n-    inHeader: { \"Ocp-Apim-Subscription-Key\": process.env.AZURE_FACE_KEY }\r\n+const credentials = new ApiKeyCredentials({\r\n+    inHeader: {\r\n+        \"Ocp-Apim-Subscription-Key\": process.env.AZURE_FACE_KEY\r\n+    }\r\n });\r\n \r\n-const faceClient = new Face(\r\n+const faceClient = new FaceClient(\r\n     credentials,\r\n     process.env.AZURE_FACE_ENDPOINT\r\n );\r\n \r\n"
+                },
+                {
+                    "date": 1765955871673,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -11,11 +11,15 @@\n     credentials,\r\n     process.env.AZURE_FACE_ENDPOINT\r\n );\r\n \r\n-export const detectFace = async (imageStream) => {\r\n-    return await faceClient.face.detectWithStream(imageStream, {\r\n-        returnFaceAttributes: [\"age\", \"gender\", \"emotion\"],\r\n-        detectionModel: \"detection_03\",\r\n-        recognitionModel: \"recognition_04\"\r\n-    });\r\n+export const detectFace = async (imageStreamFn) => {\r\n+    return await faceClient.face.detectWithStream(\r\n+        imageStreamFn,\r\n+        {\r\n+            returnFaceAttributes: [\"age\", \"gender\", \"emotion\"],\r\n+            detectionModel: \"detection_03\",\r\n+            recognitionModel: \"recognition_04\"\r\n+        }\r\n+    );\r\n };\r\n+\r\n"
+                },
+                {
+                    "date": 1765956021243,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,13 +13,9 @@\n );\r\n \r\n export const detectFace = async (imageStreamFn) => {\r\n     return await faceClient.face.detectWithStream(\r\n-        imageStreamFn,\r\n-        {\r\n-            returnFaceAttributes: [\"age\", \"gender\", \"emotion\"],\r\n-            detectionModel: \"detection_03\",\r\n-            recognitionModel: \"recognition_04\"\r\n-        }\r\n+        imageStreamFn\r\n     );\r\n };\r\n \r\n+\r\n"
+                },
+                {
+                    "date": 1765956110913,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -13,9 +13,16 @@\n );\r\n \r\n export const detectFace = async (imageStreamFn) => {\r\n     return await faceClient.face.detectWithStream(\r\n-        imageStreamFn\r\n+        imageStreamFn,\r\n+        {\r\n+            // JANGAN set recognitionModel\r\n+            // JANGAN set detectionModel\r\n+            returnFaceId: false,\r\n+            returnFaceLandmarks: false,\r\n+            returnFaceAttributes: [\"age\", \"gender\"]\r\n+        }\r\n     );\r\n };\r\n \r\n \r\n"
+                },
+                {
+                    "date": 1765956200094,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -15,13 +15,13 @@\n export const detectFace = async (imageStreamFn) => {\r\n     return await faceClient.face.detectWithStream(\r\n         imageStreamFn,\r\n         {\r\n-            // JANGAN set recognitionModel\r\n-            // JANGAN set detectionModel\r\n             returnFaceId: false,\r\n-            returnFaceLandmarks: false,\r\n-            returnFaceAttributes: [\"age\", \"gender\"]\r\n+            returnFaceLandmarks: false\r\n+            // JANGAN ADA returnFaceAttributes\r\n+            // JANGAN ADA recognitionModel\r\n+            // JANGAN ADA detectionModel\r\n         }\r\n     );\r\n };\r\n \r\n"
+                },
+                {
+                    "date": 1765957597294,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,17 +12,17 @@\n     process.env.AZURE_FACE_ENDPOINT\r\n );\r\n \r\n export const detectFace = async (imageStreamFn) => {\r\n-    return await faceClient.face.detectWithStream(\r\n+    const result = await faceClient.face.detectWithStream(\r\n         imageStreamFn,\r\n         {\r\n             returnFaceId: false,\r\n             returnFaceLandmarks: false\r\n-            // JANGAN ADA returnFaceAttributes\r\n-            // JANGAN ADA recognitionModel\r\n-            // JANGAN ADA detectionModel\r\n         }\r\n     );\r\n+\r\n+    console.log(\"AZURE RAW RESPONSE:\", result);\r\n+    return result;\r\n };\r\n \r\n \r\n"
+                }
+            ],
+            "date": 1765953511584,
+            "name": "Commit-0",
+            "content": "import * as msRest from \"@azure/ms-rest-js\";\r\nimport Face from \"@azure/cognitiveservices-face\";\r\n\r\nconst credentials = new msRest.ApiKeyCredentials({\r\n    inHeader: { \"Ocp-Apim-Subscription-Key\": process.env.AZURE_FACE_KEY }\r\n});\r\n\r\nconst faceClient = new Face(\r\n    credentials,\r\n    process.env.AZURE_FACE_ENDPOINT\r\n);\r\n\r\nexport const detectFace = async (imageStream) => {\r\n    return await faceClient.face.detectWithStream(imageStream, {\r\n        returnFaceAttributes: [\"age\", \"gender\", \"emotion\"],\r\n        detectionModel: \"detection_03\",\r\n        recognitionModel: \"recognition_04\"\r\n    });\r\n};\r\n"
+        }
+    ]
+}

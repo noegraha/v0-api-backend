@@ -1,0 +1,18 @@
+{
+    "sourceFile": "api/azure/face.routes.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1765952172300,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1765952172300,
+            "name": "Commit-0",
+            "content": "import express from \"express\";\r\nimport multer from \"multer\";\r\nimport fs from \"fs\";\r\nimport { faceClient } from \"./azureFaceClient.js\";\r\n\r\nconst router = express.Router();\r\nconst upload = multer({ dest: \"uploads/\" });\r\n\r\nrouter.post(\"/detect\", upload.single(\"image\"), async (req, res) => {\r\n    try {\r\n        const imageStream = fs.createReadStream(req.file.path);\r\n\r\n        const detected = await faceClient.face.detectWithStream(imageStream, {\r\n            returnFaceAttributes: [\"age\", \"gender\", \"emotion\"],\r\n            detectionModel: \"detection_03\",\r\n            recognitionModel: \"recognition_04\"\r\n        });\r\n\r\n        fs.unlinkSync(req.file.path);\r\n\r\n        res.json(detected);\r\n    } catch (err) {\r\n        console.error(err);\r\n        res.status(500).json({ message: \"Face detection failed\" });\r\n    }\r\n});\r\n\r\nexport default router;\r\n"
+        }
+    ]
+}

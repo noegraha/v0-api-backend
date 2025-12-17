@@ -8,7 +8,7 @@ import handlerGetQuote from './api/random-quote.js'
 import handlerGetMotivation from './api/motivation-quote.js'
 import handlerGetLaporan from './api/get-laporan.js'
 import middleware from './api/_middleware.js'
-
+import faceRoute from "./api/azure/face.route.js";
 const app = express()
 
 // Parse JSON bodies
@@ -16,7 +16,7 @@ app.use(express.json())
 
 // Apply your middleware (CORS, OPTIONS handling)
 app.use((req, res, next) => middleware(req, res, next))
-
+app.use("/api/azure", faceRoute);
 // Routes mapping to existing handlers
 app.get('/api', (req, res) => handlerIndex(req, res))
 app.get('/api/ping', (req, res) => handlerPing(req, res))
@@ -27,7 +27,7 @@ app.get('/api/motivation-quote', (req, res) => handlerGetMotivation(req, res))
 app.post('/api/simpan-data', (req, res) => handlerSimpan(req, res))
 app.post('/api/pusher/auth', (req, res) => handlerAuth(req, res))
 
-const PORT = Number(process.env.PORT) || 3000
+const PORT = Number(process.env.PORT) || 3001
 app.listen(PORT, () => console.log(`Server listening: http://localhost:${PORT}`))
 
 export default app

@@ -1,0 +1,30 @@
+{
+    "sourceFile": "api/azure/face.controller.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1765953533071,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1765953575430,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,26 @@\n+import fs from \"fs\";\r\n+import { detectFace } from \"./azureFace.service.js\";\r\n+\r\n+export const detectFaceController = async (req, res) => {\r\n+    try {\r\n+        if (!req.file) {\r\n+            return res.status(400).json({ message: \"Image is required\" });\r\n+        }\r\n+\r\n+        const imageStream = fs.createReadStream(req.file.path);\r\n+        const result = await detectFace(imageStream);\r\n+\r\n+        fs.unlinkSync(req.file.path);\r\n+\r\n+        return res.json({\r\n+            success: true,\r\n+            data: result\r\n+        });\r\n+    } catch (error) {\r\n+        console.error(error);\r\n+        return res.status(500).json({\r\n+            success: false,\r\n+            message: \"Face detection failed\"\r\n+        });\r\n+    }\r\n+};\r\n"
+                },
+                {
+                    "date": 1765955747844,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -16,11 +16,14 @@\n             success: true,\r\n             data: result\r\n         });\r\n     } catch (error) {\r\n-        console.error(error);\r\n+        console.error(\"AZURE ERROR:\", error);\r\n+\r\n         return res.status(500).json({\r\n             success: false,\r\n-            message: \"Face detection failed\"\r\n+            message: error.message,\r\n+            details: error.body || error\r\n         });\r\n     }\r\n+\r\n };\r\n"
+                },
+                {
+                    "date": 1765955858013,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,29 +1,28 @@\n-import fs from \"fs\";\r\n+import { Readable } from \"stream\";\r\n import { detectFace } from \"./azureFace.service.js\";\r\n \r\n export const detectFaceController = async (req, res) => {\r\n     try {\r\n         if (!req.file) {\r\n             return res.status(400).json({ message: \"Image is required\" });\r\n         }\r\n \r\n-        const imageStream = fs.createReadStream(req.file.path);\r\n-        const result = await detectFace(imageStream);\r\n+        // Buffer → ReadableStream\r\n+        const stream = () => Readable.from(req.file.buffer);\r\n \r\n-        fs.unlinkSync(req.file.path);\r\n+        const result = await detectFace(stream);\r\n \r\n         return res.json({\r\n             success: true,\r\n             data: result\r\n         });\r\n+\r\n     } catch (error) {\r\n         console.error(\"AZURE ERROR:\", error);\r\n \r\n         return res.status(500).json({\r\n             success: false,\r\n-            message: error.message,\r\n-            details: error.body || error\r\n+            message: error.message\r\n         });\r\n     }\r\n-\r\n };\r\n"
+                }
+            ],
+            "date": 1765953533071,
+            "name": "Commit-0",
+            "content": "import fs from \"fs\";\r\nimport { detectFace } from \"../services/azureFace.service.js\";\r\n\r\nexport const detectFaceController = async (req, res) => {\r\n    try {\r\n        if (!req.file) {\r\n            return res.status(400).json({ message: \"Image is required\" });\r\n        }\r\n\r\n        const imageStream = fs.createReadStream(req.file.path);\r\n        const result = await detectFace(imageStream);\r\n\r\n        fs.unlinkSync(req.file.path);\r\n\r\n        return res.json({\r\n            success: true,\r\n            data: result\r\n        });\r\n    } catch (error) {\r\n        console.error(error);\r\n        return res.status(500).json({\r\n            success: false,\r\n            message: \"Face detection failed\"\r\n        });\r\n    }\r\n};\r\n"
+        }
+    ]
+}

@@ -4,7 +4,7 @@ export const runtime = 'nodejs';
 export default function handler(req, res) {
   res.status(200).json({
     message: "API is running",
-    endpoints: ["/api/simpan-data", "/api/get-laporan", "/api/random-quote", "/api/motivation-quote", "/api/pusher/auth"],
+    endpoints: ["/api/simpan-data", "/api/get-laporan", "/api/random-quote", "/api/motivation-quote", "/api/pusher/auth", "/api/azure/detect"],
     timestamp: new Date().toISOString(),
   })
 }

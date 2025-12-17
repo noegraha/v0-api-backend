@@ -8,6 +8,12 @@
         "start": "echo \"serverless\""
     },
     "dependencies": {
+        "@azure-rest/ai-vision-face": "^1.0.0-beta.3",
+        "@azure/cognitiveservices-face": "^5.0.0",
+        "@azure/ms-rest-js": "^2.7.0",
+        "dotenv": "^17.2.3",
+        "express": "^5.2.1",
+        "multer": "^2.0.2",
         "mysql2": "^3.11.0",
         "pusher": "^5.2.0"
     },

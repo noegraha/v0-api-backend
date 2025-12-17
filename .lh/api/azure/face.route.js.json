@@ -1,0 +1,26 @@
+{
+    "sourceFile": "api/azure/face.route.js",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1765953551657,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1765953561155,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,14 @@\n+import express from \"express\";\r\n+import multer from \"multer\";\r\n+import { detectFaceController } from \"./face.controller.js\";\r\n+\r\n+const router = express.Router();\r\n+const upload = multer({ dest: \"uploads/\" });\r\n+\r\n+router.post(\r\n+    \"/detect\",\r\n+    upload.single(\"image\"),\r\n+    detectFaceController\r\n+);\r\n+\r\n+export default router;\r\n"
+                },
+                {
+                    "date": 1765955839945,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -2,9 +2,12 @@\n import multer from \"multer\";\r\n import { detectFaceController } from \"./face.controller.js\";\r\n \r\n const router = express.Router();\r\n-const upload = multer({ dest: \"uploads/\" });\r\n+const upload = multer({\r\n+    storage: multer.memoryStorage(),\r\n+    limits: { fileSize: 5 * 1024 * 1024 } // 5MB\r\n+});\r\n \r\n router.post(\r\n     \"/detect\",\r\n     upload.single(\"image\"),\r\n"
+                }
+            ],
+            "date": 1765953551657,
+            "name": "Commit-0",
+            "content": "import express from \"express\";\r\nimport multer from \"multer\";\r\nimport { detectFaceController } from \"../controllers/face.controller.js\";\r\n\r\nconst router = express.Router();\r\nconst upload = multer({ dest: \"uploads/\" });\r\n\r\nrouter.post(\r\n    \"/detect\",\r\n    upload.single(\"image\"),\r\n    detectFaceController\r\n);\r\n\r\nexport default router;\r\n"
+        }
+    ]
+}
